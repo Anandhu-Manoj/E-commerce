@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../Components/Header";
 import { Link } from "react-router-dom";
 import Footer from "../Components/Footer";
+import { fetchAllProducts } from "../redux/slices/productSlice";
+import { useDispatch } from "react-redux";
+
 
 const Home = () => {
+
+
+  const dispatch=useDispatch();
+  useEffect(()=>{
+    dispatch( fetchAllProducts())
+  },[])
   return (
     <>
       <Header />
