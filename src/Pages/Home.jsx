@@ -3,37 +3,59 @@ import Header from "../Components/Header";
 import { Link } from "react-router-dom";
 import Footer from "../Components/Footer";
 import { fetchAllProducts } from "../redux/slices/productSlice";
-import { useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { all } from "axios";
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { allProducts, loading, error } = useSelector(
+    (state) => state.productReducer
+  );
 
+  console.log(allProducts);
 
-  const dispatch=useDispatch();
-  useEffect(()=>{
-    dispatch( fetchAllProducts())
-  },[])
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+  }, []);
   return (
     <>
       <Header />
 
       <div style={{ paddingTop: "80px" }} className="ms-5">
-        <>
-          <div className="grid grid-cols-4 gap-5 ">
-            <div className="border shadow rounded pb-4">
-              <img
-                src="https://cdn.dummyjson.com/products/images/beauty/Essence%20Mascara%20Lash%20Princess/1.png"
-                alt=""
-              />
-              <div className="text-center">
-                <h3 className="font-bold text-xl mb-3">camera</h3>
-                <Link className="bg-yellow-500 p-1  rounded" to={'id/view'}>view more..</Link>
-              </div>
-            </div>
+        {loading ? (
+          <div className="flex justify-center">
+            <img
+              src="https://loading.io/assets/mod/spinner/double-ring/lg.gif"
+              alt=""
+            />
           </div>
-        </>
+        ) : (
+          <div className="grid grid-cols-4 gap-5 ">
+            {allProducts?.length > 0 ? (
+              allProducts.map((products) => (
+                <div>
+                  <div key={products.id} className="border shadow rounded pb-4">
+                    <img src={products.images} alt="" />
+                    <div className="text-center">
+                      <h3 className="font-bold text-xl mb-3">
+                        {products.title}
+                      </h3>
+                      <Link
+                        className="bg-yellow-500 p-1  rounded"
+                        to={`/${products.id}/view`}
+                      >
+                        view more..
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex justify-center">no products available</div>
+            )}
+          </div>
+        )}
       </div>
-     
     </>
   );
 };
