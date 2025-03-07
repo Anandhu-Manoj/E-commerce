@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { searchProducts } from "../redux/slices/productSlice";
+import { useDispatch } from "react-redux";
 
-const Header = () => {
+
+const Header = ({fromHomeComponent}) => {
+  const dispatchSearch=useDispatch();
   return (
     <nav className="flex bg-yellow-600 fixed p-5 w-full justify-between ">
       <Link to={"/"} className="text-white font-bold">
@@ -9,8 +13,11 @@ const Header = () => {
       </Link>
 
       <ul className="flex gap-5">
-        <li className="bg-white">
+        {fromHomeComponent?(<li className="bg-white">
           <input
+          onChange={(e)=>{
+            dispatchSearch(searchProducts(e.target.value.toLowerCase()))
+          }}
             type="text"
             style={{ width: "300px" }}
             className="rounded p-1 outline-0 "
@@ -18,7 +25,7 @@ const Header = () => {
             id=""
             placeholder="search products here..."
           />
-        </li>
+        </li>):("")}
         <Link to={"/wishlist"}>
           <li>
             <i className="fa-solid fa-heart text-red-600"></i> Wish list{" "}

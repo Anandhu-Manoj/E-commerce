@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Footer from "../Components/Footer";
 import { fetchAllProducts } from "../redux/slices/productSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { all } from "axios";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -12,50 +11,53 @@ const Home = () => {
     (state) => state.productReducer
   );
 
-  console.log(allProducts);
-
   useEffect(() => {
     dispatch(fetchAllProducts());
-  }, []);
+  }, [dispatch]);
+
   return (
     <>
-      <Header />
+      <Header fromHomeComponent={true} />
 
-      <div style={{ paddingTop: "80px" }} className="ms-5">
+      <div className="pt-32 px-5"> {}
         {loading ? (
           <div className="flex justify-center">
             <img
               src="https://loading.io/assets/mod/spinner/double-ring/lg.gif"
-              alt=""
+              alt="Loading"
             />
           </div>
         ) : (
-          <div className="grid grid-cols-4 gap-5 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {allProducts?.length > 0 ? (
-              allProducts.map((products) => (
-                <div>
-                  <div key={products.id} className="border shadow rounded pb-4">
-                    <img src={products.images} alt="" />
-                    <div className="text-center">
-                      <h3 className="font-bold text-xl mb-3">
-                        {products.title}
-                      </h3>
-                      <Link
-                        className="bg-yellow-500 p-1  rounded"
-                        to={`/${products.id}/view`}
-                      >
-                        view more..
-                      </Link>
-                    </div>
+              allProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="shadow-lg rounded-lg overflow-hidden   duration-300 "
+                >
+                  <img
+                    src={product.thumbnail}
+                    alt={product.title}
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="p-4 text-center">
+                    <h3 className="font-bold text-xl mb-3">{product.title}</h3>
+                    <Link
+                      className="bg-yellow-500 p-2 rounded text-white"
+                      to={`/${product.id}/view`}
+                    >
+                      View more..
+                    </Link>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="flex justify-center">no products available</div>
+              <div className="flex justify-center">No products available</div>
             )}
           </div>
         )}
       </div>
+      
     </>
   );
 };
