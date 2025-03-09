@@ -1,89 +1,109 @@
 import React, { useEffect } from "react";
-import Header from "../Components/Header";
+import Header from "../components/Header";
+import { fetchProductById } from "../redux/slices/singleProductSlice";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllProductsById } from "../redux/slices/singleProductSlice";
+import { addToWhishList } from "../redux/slices/wishListSlice";
+import { addToCart } from "../redux/slices/cartSlice";
 
 const View = () => {
-  const { id } = useParams();
-  const dispatch = useDispatch();
-  const { Product, loading, error } = useSelector(
-    (state) => state.singleProductReducer
-  );
+  const { product } = useSelector((state) => state.singleProductReducer);
 
+  const whishlistState = useSelector((state) => state.whishListReducer);
+
+  const cartData = useSelector((state)=>state.cartReducer)
+
+  let { id } = useParams();
+  const disp = useDispatch();
   useEffect(() => {
-    dispatch(fetchAllProductsById(id));
-  }, [dispatch, id]);
+    disp(fetchProductById(id));
+  }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <img
-          src="https://loading.io/assets/mod/spinner/double-ring/lg.gif"
-          alt="Loading"
-        />
-      </div>
-    );
-  }
+  const onAddtoWhishlist = (product) => {
+    const existingProduct = whishlistState.find((val) => val.id == product.id);
+    if (existingProduct) {
+      alert("Product Already Added to Whishlist");
+    } else {
+      disp(addToWhishList(product));
+    }
+  };
 
-  if (error) {
-    return <div className="text-center text-red-600">Error: {error}</div>;
-  }
-
-  if (!Product) {
-    return <div className="text-center">Product not found</div>;
+  const onCartClick =(product)=>{
+    let existingProduct = cartData.find((val)=>val.id==product.id)
+    disp(addToCart(product))
+    if(existingProduct){
+      alert("Product quantity is incrementing in your cart!!!")
+    }else{
+      alert("Product Successfully Added to CART")
+    }
   }
 
   return (
-    <div>
+    <>
       <Header />
-      <div className="container mx-auto pt-20 px-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex flex-col items-center">
-            <img
-              src={Product.thumbnail}
-              alt={Product.title}
-              className="shadow-lg rounded-lg w-[60%] mt-10 h-auto"
-            />
-            <div className="flex justify-around mt-4 w-full">
-              <button className="bg-green-600 border rounded p-2 text-white">
-                Add to wishlist
-              </button>
-              <button className="bg-blue-600 border rounded p-2 text-white">
-                Add to cart
-              </button>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center">
-            <h1 className="text-4xl font-bold mb-4">{Product.title}</h1>
-            <span className="text-red-600 text-2xl mb-4">${Product.price}</span>
-            <p className="mb-4">
-              <strong>Brand:</strong> {Product.brand} <br />
-              <strong>Category:</strong> {Product.category} <br />
-              <strong>Description:</strong> {Product.description}
-            </p>
-            <h2 className="mt-6 text-lg font-semibold text-gray-800">
-              Client Reviews
-            </h2>
-
-            {Product.reviews?.map((obj) => (
-              <div
-                key={Product.id}
-                className="border rounded-lg p-4 shadow-md mt-2 bg-gray-100 w-[90%]"
-              >
-                <h3 className="font-semibold text-gray-800">
-                  {obj.reviewerName}
-                </h3>
-                <p className="text-gray-600 text-sm italic">{obj.comment}</p>
-                <p className="text-yellow-600 font-semibold mt-1">
-                  ⭐ Rating: {obj.rating}
-                </p>
-              </div>
-            ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 px-10 md:px-20 pt-20">
+        {/* Left Section: Product Image & Buttons */}
+        <div className="flex flex-col items-center">
+          <img
+            className="w-[20rem] md:w-[25rem] rounded-lg shadow-lg"
+            src={product?.thumbnail}
+            alt="Essence Mascara Lash Princess"
+          />
+          <div className="flex gap-5 mt-5">
+            <button
+              onClick={() => onAddtoWhishlist(product)}
+              className="bg-violet-700 hover:bg-violet-900 transition px-5 py-3 rounded-lg text-white font-semibold shadow"
+            >
+              ❤️ Add to Wishlist
+            </button>
+            <button onClick={()=>onCartClick(product)} className="bg-green-700 hover:bg-green-900 transition px-5 py-3 rounded-lg text-white font-semibold shadow">
+              🛒 Add to Cart
+            </button>
           </div>
         </div>
+
+        {/* Right Section: Product Details */}
+        <div className="mt-5 md:mt-0">
+          <p className="text-gray-600">PID: {id}</p>
+          <h1 className="font-bold text-2xl md:text-3xl text-gray-800">
+            {product?.title}
+          </h1>
+          <p className="text-red-600 font-bold text-xl mt-2">$9.99</p>
+          <p className="text-gray-700 mt-1">
+            <span className="font-semibold">Brand:</span> {product?.brand}
+          </p>
+          <p className="text-gray-700">
+            <span className="font-semibold">Category:</span> {product?.category}
+          </p>
+
+          {/* Description Section */}
+          <p className="mt-4 text-gray-700 leading-relaxed">
+            <span className="font-semibold">Description:</span>{" "}
+            {product.description}
+          </p>
+
+          {/* Client Reviews Section */}
+          <h2 className="mt-6 text-lg font-semibold text-gray-800">
+            Client Reviews
+          </h2>
+
+          {product.reviews?.map((obj) => (
+            <div
+              key={product.id}
+              className="border rounded-lg p-4 shadow-md mt-2 bg-gray-100 w-[90%]"
+            >
+              <h3 className="font-semibold text-gray-800">
+                {obj.reviewerName}
+              </h3>
+              <p className="text-gray-600 text-sm italic">{obj.comment}</p>
+              <p className="text-yellow-600 font-semibold mt-1">
+                ⭐ Rating: {obj.rating}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
