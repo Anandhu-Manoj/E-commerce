@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/Header";
-import { useSelector } from "react-redux";
+import Header from "../Components/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, removeFromCart, decrementQuantity,emptyCart } from "../redux/slices/cartSlice";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const Cart = () => {
-  const [totalPriceVal, setotalPriceVal] = useState(0);
+  const [totalPriceVal, setTotalPriceVal] = useState(0);
 
   const cartData = useSelector((state) => state.cartReducer);
   useEffect(() => {
-    setotalPriceVal(cartData?.map((item) => item.totalPrice)?.reduce((a, b) => a + b));
-  },[cartData]);
-
-  console.log(totalPriceVal);
-  
+    setTotalPriceVal(cartData?.map((item) => item.totalPrice)?.reduce((a, b) => a + b, 0));
+  }, [cartData]);
+ 
+  const navigate=useNavigate()
+  const dispatch = useDispatch();
+  const onCheckOut=()=>{
+    dispatch(emptyCart())
+    alert("succesfully checked out....")
+    navigate("/")
+  }
 
   return (
     <>
@@ -24,7 +32,7 @@ const Cart = () => {
               <table className="w-full">
                 <thead>
                   <tr>
-                    <th>#</th>
+                    <th>SL No</th>
                     <th>Name</th>
                     <th>Image</th>
                     <th>Quantity</th>
@@ -43,7 +51,12 @@ const Cart = () => {
                         </td>
                         <td>
                           <div className="flex">
-                            <button className="font-bold">-</button>
+                            <button
+                              className="font-bold"
+                              onClick={() => dispatch(decrementQuantity(val.id))}
+                            >
+                              -
+                            </button>
                             <input
                               type="text"
                               style={{ width: "40px" }}
@@ -51,12 +64,17 @@ const Cart = () => {
                               value={val.quantity}
                               readOnly
                             />
-                            <button className="font-bold ">+</button>
+                            <button
+                              className="font-bold"
+                              onClick={() => dispatch(addToCart(val))}
+                            >
+                              +
+                            </button>
                           </div>
                         </td>
                         <td>{val.totalPrice}</td>
                         <td>
-                          <button>
+                          <button onClick={() => dispatch(removeFromCart(val.id))}>
                             <i className="fa-solid fa-trash text-red-600"></i>
                           </button>
                         </td>
@@ -73,12 +91,12 @@ const Cart = () => {
                 </tbody>
               </table>
               <div className="float-right">
-                <button className="bg-red-600 text-white font-bold rounded p-1 me-5">
+                <button className="bg-red-600 text-white font-bold rounded p-1 me-5" onClick={()=>dispatch(emptyCart())}> 
                   Empty Cart
                 </button>
-                <button className="bg-blue-600 text-white font-bold rounded p-1 me-5">
+                <Link to={"/"} className="bg-blue-600 text-white font-bold rounded p-1 me-5">
                   Shop More
-                </button>
+                </Link >
               </div>
             </div>
             <div className="border rounded shadow p-5">
@@ -86,7 +104,7 @@ const Cart = () => {
                 Total Amount : <span className="text-red-700">{totalPriceVal}</span>
               </h1>
               <hr />
-              <button className="bg-green-600 rounded p-1 w-full mt-2 text-white font-bold text-xl">
+              <button onClick={onCheckOut} className="bg-green-600 rounded p-1 w-full mt-2 text-white font-bold text-xl">
                 Checkout
               </button>
             </div>
