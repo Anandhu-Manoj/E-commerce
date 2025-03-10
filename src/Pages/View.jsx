@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Header from "../components/Header";
+import Header from "../Components/Header";
 import { fetchProductById } from "../redux/slices/singleProductSlice";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";

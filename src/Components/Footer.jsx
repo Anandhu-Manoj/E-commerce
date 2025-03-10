@@ -10,8 +10,10 @@ const Footer = () => {
             <i className="fa-solid fa-truck-fast mr-2"></i> E-commerce
           </h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Non neque
-            eveniet error, voluptas repellendus sequi pariatur, eaque deserunt.
+            Your go-to destination for quality products at unbeatable prices. We
+            offer fast and secure shipping, easy returns, and 24/7 customer
+            support to ensure a seamless shopping experience. Explore our
+            exclusive deals and shop with confidence!
           </p>
         </div>
         <div className="w-full md:w-1/6 p-3">
@@ -41,7 +43,9 @@ const Footer = () => {
             type="email"
             placeholder="Enter your E-mail here!!!"
           />
-          <button className="bg-yellow-500 text-black rounded p-2 ml-2">→</button>
+          <button className="bg-yellow-500 text-black rounded p-2 ml-2">
+            →
+          </button>
           <div className="flex mt-2">
             <i className="fa-brands fa-twitter m-1"></i>
             <i className="fa-brands fa-instagram m-1 ml-3"></i>
